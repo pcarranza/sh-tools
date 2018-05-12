@@ -16,8 +16,8 @@ type URL interface {
 // ErrInvalidURL is returned from Parse when the url is not a valid git url
 var ErrInvalidURL = errors.New("Invalid URL")
 
-var gitURLParser = regexp.MustCompile("git@([\\w\\.]+):(.+)\\.git")
-var gitPathParser = regexp.MustCompile("(.+)\\.git")
+var gitURLParser = regexp.MustCompile("^git@([\\w\\.]+):(.+?)(?:\\.git)?$")
+var gitPathParser = regexp.MustCompile("^(.+?)(?:\\.git)?$")
 
 // Parse gets a url string and returns a URL object, or an error
 func Parse(uri string) (URL, error) {
@@ -30,6 +30,10 @@ func Parse(uri string) (URL, error) {
 		}
 
 		matches := gitURLParser.FindStringSubmatch(uri)
+		if len(matches) != 3 {
+			return nil, ErrInvalidURL
+		}
+
 		return gitURL{
 			domain: matches[1],
 			path:   matches[2],
@@ -40,10 +44,14 @@ func Parse(uri string) (URL, error) {
 		if err != nil {
 			return gitURL{}, nil
 		}
+		matches := gitPathParser.FindStringSubmatch(u.Path)
+		if len(matches) != 2 {
+			return nil, ErrInvalidURL
+		}
 
 		return gitURL{
 			domain: u.Hostname(),
-			path:   gitPathParser.FindStringSubmatch(u.Path)[1],
+			path:   matches[1],
 		}, nil
 	}
 	return gitURL{}, nil

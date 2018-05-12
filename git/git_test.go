@@ -26,8 +26,26 @@ func Test_ParseGitHubURL(t *testing.T) {
 			nil,
 		},
 		{
+			"GitHub Git URL without ending",
+			"git@github.com:gomeeseeks/meeseeks-box",
+			"github.com/gomeeseeks/meeseeks-box",
+			nil,
+		},
+		{
 			"GitHub HTTP URL",
 			"https://github.com/gomeeseeks/meeseeks-box.git",
+			"github.com/gomeeseeks/meeseeks-box",
+			nil,
+		},
+		{
+			"GitHub HTTP URL",
+			"http://github.com/gomeeseeks/meeseeks-box.git",
+			"github.com/gomeeseeks/meeseeks-box",
+			nil,
+		},
+		{
+			"GitHub HTTP URL without ending",
+			"http://github.com/gomeeseeks/meeseeks-box",
 			"github.com/gomeeseeks/meeseeks-box",
 			nil,
 		},
