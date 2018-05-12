@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/url"
 	"os"
+	"os/exec"
 	"path"
-	"strings"
+
+	"github.com/pcarranza/sh-tools/git"
 )
 
 func main() {
@@ -29,7 +30,7 @@ func main() {
 }
 
 func cloneGitURL(gitURL string) error {
-	u, err := url.Parse(gitURL)
+	u, err := git.Parse(gitURL)
 	if err != nil {
 		return fmt.Errorf("could not parse git url %s: %s", gitURL, err)
 	}
@@ -39,12 +40,7 @@ func cloneGitURL(gitURL string) error {
 		gopath = path.Join(os.Getenv("HOME"), "Go")
 	}
 
-	repopath := u.Path
-	if strings.HasSuffix(repopath, ".git") {
-		repopath = repopath[:len(repopath)-4]
-	}
-
-	r := path.Join(gopath, "src", u.Hostname(), repopath)
+	r := path.Join(gopath, "src", u.ToGoPath())
 
 	if dirExists(r) {
 		return fmt.Errorf("destination folder %s already exists", r)
@@ -58,15 +54,13 @@ func cloneGitURL(gitURL string) error {
 		}
 	}
 
-	fmt.Printf("command to run: git clone %s %s", gitURL, r)
-
-	// cmd := exec.Command("git", "clone", gitURL, r)
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Stdin = os.Stdin
-	// if err := cmd.Run(); err != nil {
-	// 	return fmt.Errorf("could not clone git repo %s into %s: %s", gitURL, r, err)
-	// }
+	cmd := exec.Command("git", "clone", gitURL, r)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("could not clone git repo %s into %s: %s", gitURL, r, err)
+	}
 	return nil
 }
 

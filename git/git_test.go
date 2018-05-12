@@ -1,7 +1,7 @@
 package git_test
 
 import (
-	"gitlab.com/pcarranza/sh-tools/git"
+	"github.com/pcarranza/sh-tools/git"
 	"reflect"
 	"testing"
 )
