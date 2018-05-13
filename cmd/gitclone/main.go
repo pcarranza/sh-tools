@@ -14,7 +14,10 @@ func main() {
 	flag.Parse()
 
 	if flag.NArg() == 0 {
-		fmt.Printf("Not enough arguments, I need at least 1 url\n")
+		fmt.Println("Error: not enough arguments, I need at least 1 url")
+		fmt.Println("")
+		fmt.Println("Usage:", os.Args[0], "git-url...")
+		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
